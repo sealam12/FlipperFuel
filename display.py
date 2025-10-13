@@ -35,7 +35,7 @@ class Display:
         outline_sides(24, 3, f"TIME           {self.tc.stint_time_required():05.2f}" + term.normal)
 
     def display_live_race(self):
-        color = self.lc.projected_stints_total() > self.rd.seed_data.avg_lap_fuel and term.on_red or ""
+        color = (self.lc.projected_stints_total() > self.rd.targets.stint_target) and term.on_red or ""
 
         print(term.move_xy(0, 4) + bgcolor + "        LIVE RACE         " + term.normal, end="")
         outline_sides(0, 5, f"FUEL R        {self.lc.remaining_race_fuel():06.2f}")
