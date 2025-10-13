@@ -1,5 +1,5 @@
 from blessed import Terminal
-import time
+import time, math
 
 term = Terminal()
 bgcolor = term.on_color_rgb(60,56,54)
@@ -35,28 +35,37 @@ class Display:
         outline_sides(24, 3, f"TIME           {self.tc.stint_time_required():05.2f}" + term.normal)
 
     def display_live_race(self):
+        color = self.lc.projected_stints_total() > self.rd.seed_data.avg_lap_fuel and term.on_red or ""
+
         print(term.move_xy(0, 4) + bgcolor + "        LIVE RACE         " + term.normal, end="")
         outline_sides(0, 5, f"FUEL R        {self.lc.remaining_race_fuel():06.2f}")
         outline_sides(0, 6, f"LAPS R           {self.lc.remaining_race_laps():03d}")
-        outline_sides(0, 7, f"STINTS PROJ       {self.lc.projected_stints_total():02d}")
-        outline_sides(0, 8, f"STINTS REMN       {self.lc.projected_stints_remaining():02d}")
+        outline_sides(0, 7, color + f"STINTS PROJ       {self.lc.projected_stints_total():02d}" + term.normal)
+        outline_sides(0, 8, color + f"STINTS REMN       {self.lc.projected_stints_remaining():02d}" + term.normal)
 
     def display_live_stint(self):
         print(term.move_xy(26, 4) + bgcolor + "       LIVE STINT       " + term.normal, end="")
-        outline_sides(24, 5, f"AVG FUEL        {self.lc.avg_lap_fuel:04.2f}")
-        outline_sides(24, 6, f"AVG TIME      {self.lc.avg_lap_time:06.2f}")
+
+        color = ""
+        if self.rd.live_data.avg_lap_fuel > self.tc.lap_fuel_required():
+            color = term.on_yellow
+        if self.rd.live_data.avg_lap_fuel > self.lc.lap_fuel_required():
+            color = term.on_red
+
+        outline_sides(24, 5, color + f"AVG FUEL        {self.rd.live_data.avg_lap_fuel:04.2f}" + term.normal)
+        outline_sides(24, 6, f"AVG TIME      {self.rd.live_data.avg_lap_time:06.2f}")
         outline_sides(24, 7, f"LAPS R         {self.lc.current_stint_laps_remaining():05.2f}")
         outline_sides(24, 8, f"TIME R         {self.lc.current_stint_time_remaining():05.2f}")
+    
+    def display_live_minimum(self):
+        lf_color = self.lc.lap_fuel_required() < self.tc.lap_fuel_required() and term.on_yellow or ""
+        l_color = self.lc.stint_laps_required() > self.tc.stint_laps_required() and term.on_yellow or ""
+        t_color = self.lc.stint_time_required() > self.tc.stint_time_required() and term.on_yellow or ""
 
-        # text += f"\n| LAPS R       {self.lc.current_stint_laps_remaining():05.2f} |"
-        # text += f"\n| TIME R       {self.lc.current_stint_time_remaining():05.2f} |"
-        # text +=  "\n+--------------------+"
-
-    def display_live_target(self):
         print(term.move_xy(0, 9) + bgcolor + "                   LIVE MINIMUM                   " + term.normal, end="")
-        outline_sides(12, 10, f"LAP FUEL        {self.lc.lap_fuel_required():04.2f}")
-        outline_sides(12, 11, f"LAPS           {self.lc.stint_laps_required():05.2f}")
-        outline_sides(12, 12, f"TIME           {self.lc.stint_time_required():05.2f}")
+        outline_sides(12, 10, lf_color + f"LAP FUEL        {self.lc.lap_fuel_required():04.2f}" + term.normal)
+        outline_sides(12, 11, l_color + f"LAPS           {self.lc.stint_laps_required():05.2f}" + term.normal)
+        outline_sides(12, 12, t_color + f"TIME           {self.lc.stint_time_required():05.2f}" + term.normal)
         print(term.move_xy(0, 13) + (" " * 12) + bgcolor + (" " * 26) + term.normal, end="")
 
     def display_all(self):
@@ -66,9 +75,6 @@ class Display:
             print(term.home + term.clear, end="")
 
             self.on_track = self.lc.projected_stints_total() <= self.rd.targets.stint_target
-            self.on_track = True
-
-            bgcolor = self.on_track and term.on_color_rgb(60,56,54) or term.on_red
 
             self.display_target_race()
             self.display_target_stint()
@@ -76,7 +82,7 @@ class Display:
             self.display_live_race()
             self.display_live_stint()
 
-            self.display_live_target()
+            self.display_live_minimum()
 
             print(term.move_xy(0, term.height-1), end="")
 

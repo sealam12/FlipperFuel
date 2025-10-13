@@ -2,7 +2,7 @@ from calculator import TargetCalculator, LiveCalculator
 from display import Display
 from data import RaceData
 
-race_data = RaceData("races/gt-endurance-barcelona.ini")
+race_data = RaceData("races/petit-lemans.ini")
 lc = LiveCalculator(race_data)
 tc = TargetCalculator(race_data)
 

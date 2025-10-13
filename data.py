@@ -13,10 +13,19 @@ class Targets:
     def __init__(self, data):
         self.stint_target = data.getint("stint_target")
 
-class LapData:
+class SeedData:
     def __init__(self, data):
         self.avg_lap_time = data.getfloat("avg_lap_time")
         self.avg_lap_fuel = data.getfloat("avg_lap_fuel")
+
+class LiveData:
+    def __init__(self, full_data):
+        self.avg_lap_time = full_data["Data"].getfloat("avg_lap_time")
+        self.avg_lap_fuel = full_data["Data"].getfloat("avg_lap_fuel")
+
+        self.completed_stints = 0
+        self.minutes_remaining = full_data["RaceInfo"].getint("race_length")
+        self.fuel_remaining = full_data["CarInfo"].getfloat("max_fuel")
 
 class RaceData:
     def __init__(self, race_file):
@@ -28,4 +37,4 @@ class RaceData:
         self.race_info = RaceInfo(self.config["RaceInfo"])
         self.car_info = CarInfo(self.config["CarInfo"])
         self.targets = Targets(self.config["Targets"])
-        self.lap_data = LapData(self.config["Data"])
+        self.seed_data = SeedData(self.config["Data"])

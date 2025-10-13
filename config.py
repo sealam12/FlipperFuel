@@ -17,7 +17,7 @@ class RaceCreator:
         self.create_race()
         self.write_file()
     
-    def create_lap_data(self):
+    def create_seed_data(self):
         car_class = self.car_config["CarInfo"]["car_class"].split("\"")[1].lower()
 
         lap_fuel = 0
@@ -41,7 +41,7 @@ class RaceCreator:
     def create_race(self):
         self.race_config.set("RaceInfo", "race_name", self.race_name)
 
-        self.create_lap_data()
+        self.create_seed_data()
         self.race_config.set("CarInfo", "max_fuel", self.car_config["Fuel"]["max_fuel"])
 
         self.race_config.set("RaceInfo", "track_file", f"\"{self.track_file}\"")
