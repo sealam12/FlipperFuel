@@ -1,5 +1,5 @@
 from blessed import Terminal
-import time, math
+import time, math, random
 
 term = Terminal()
 bgcolor = term.on_color_rgb(60,56,54)
@@ -36,6 +36,7 @@ class Display:
 
     def display_live_race(self):
         color = (self.lc.projected_stints_total() > self.rd.targets.stint_target) and term.on_red or ""
+        color = (self.lc.projected_stints_total() < self.rd.targets.stint_target) and term.on_green or color
 
         print(term.move_xy(0, 4) + bgcolor + "        LIVE RACE         " + term.normal, end="")
         outline_sides(0, 5, f"FUEL R        {self.lc.remaining_race_fuel():06.2f}")
@@ -51,9 +52,11 @@ class Display:
             color = term.on_yellow
         if self.rd.live_data.avg_lap_fuel > self.lc.lap_fuel_required():
             color = term.on_red
+        if self.rd.live_data.avg_lap_fuel < (self.lc.lap_fuel_required()*0.96):
+            color = term.on_green
 
         outline_sides(24, 5, color + f"AVG FUEL        {self.rd.live_data.avg_lap_fuel:04.2f}" + term.normal)
-        outline_sides(24, 6, f"AVG TIME      {self.rd.live_data.avg_lap_time:06.2f}")
+        outline_sides(24, 6, f"FUEL R         {self.rd.live_data.fuel_remaining:05.2f}")
         outline_sides(24, 7, f"LAPS R         {self.lc.current_stint_laps_remaining():05.2f}")
         outline_sides(24, 8, f"TIME R         {self.lc.current_stint_time_remaining():05.2f}")
     

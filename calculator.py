@@ -95,8 +95,8 @@ class LiveCalculator:
         return remaining_time
     
     def stint_laps_required(self):
-        stints_remaining = self.data.targets.stint_target - self.data.live_data.completed_stints
-        laps_remaining = self.remaining_race_laps()
+        stints_remaining = self.data.targets.stint_target - (self.data.live_data.completed_stints+1)
+        laps_remaining = self.remaining_race_laps() - self.current_stint_laps_remaining()
 
         return laps_remaining / stints_remaining
     
