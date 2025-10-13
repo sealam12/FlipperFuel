@@ -38,3 +38,4 @@ class RaceData:
         self.car_info = CarInfo(self.config["CarInfo"])
         self.targets = Targets(self.config["Targets"])
         self.seed_data = SeedData(self.config["Data"])
+        self.live_data  = LiveData(self.config)
